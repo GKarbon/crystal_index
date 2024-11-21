@@ -1,6 +1,5 @@
-from math import sqrt
 import unittest
-from numpy import array, allclose, square
+from numpy import array, allclose, square, sqrt
 from src.crystal_index.crystal import (
     get_possible_index_combinations,
     CrystalSystem,
@@ -42,7 +41,7 @@ class TestCrystal(unittest.TestCase):
         plane1 = CrystalPlane(1, 0, 0)
         plane2 = CrystalPlane(0, 1, 0)
         angle = CrystalPlane.angle_between(plane1, plane2)
-        self.assertAlmostEqual(angle, 1.5708, places=4)  # 90 degrees in radians
+        self.assertAlmostEqual(angle, 90, places=4)
 
     def test_crystal_plane_get_zone_axis(self):
         plane1 = CrystalPlane(1, 0, 0)
@@ -84,7 +83,9 @@ class TestCrystal(unittest.TestCase):
         self.check_crystal_initialization("BCC", 8, expected_ratios)
 
     def test_FCC_crystal_initialization(self):
-        expected_ratios = [float(sqrt(i) / sqrt(3)) for i in [3, 4, 8, 11, 12, 16, 19, 20]]
+        expected_ratios = [
+            float(sqrt(i) / sqrt(3)) for i in [3, 4, 8, 11, 12, 16, 19, 20]
+        ]
         self.check_crystal_initialization("FCC", 8, expected_ratios)
 
     def test_crystal_get_d_ratio(self):

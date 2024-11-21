@@ -101,7 +101,7 @@ class CrystalPlane:
         Returns
         -------
         float
-            The angle in radians.
+            The angle in angles.
         """
 
         def unit_vector(vector):
@@ -122,7 +122,7 @@ class CrystalPlane:
 
         p1_u = unit_vector(p1.planenormal)
         p2_u = unit_vector(p2.planenormal)
-        return arccos(clip(dot(p1_u, p2_u), -1.0, 1.0))
+        return rad2deg(arccos(clip(dot(p1_u, p2_u), -1.0, 1.0)))
 
     @classmethod
     def get_zone_axis(cls, p1: "CrystalPlane", p2: "CrystalPlane"):
@@ -291,7 +291,7 @@ class Crystal:
             vector_1 = pair[0]
             vector_2_lst = pair[1].get_equivalent_planes()
             for vector_2 in vector_2_lst:
-                if rad2deg(CrystalPlane.angle_between(vector_1, vector_2)) < angle:
+                if CrystalPlane.angle_between(vector_1, vector_2) < angle:
                     print(f"Vector 1: {vector_1}, Vector 2: {vector_2}")
                     print(
                         f"Zone axis: {CrystalPlane.get_zone_axis(vector_1, vector_2)}"
@@ -305,7 +305,9 @@ def main() -> None:
     Main function to create a Crystal object and find pairs of faces.
     """
     crystal = Crystal("FCC", 8)  # Accepts string input
-    crystal.find_pairs(28.93 / 11.11, 66)
+    crystal.find_pairs(
+        28.93 / 11.11, 66
+    )  # TODO: Input two lengths(float), sort in the function to calculate
 
 
 if __name__ == "__main__":
