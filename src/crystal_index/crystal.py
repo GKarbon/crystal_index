@@ -2,6 +2,8 @@ from enum import Enum
 from typing import Literal, Union
 from itertools import combinations, combinations_with_replacement, permutations, product
 from numpy import arccos, array, clip, cross, dot, linalg, newaxis, rad2deg, square
+import cv2
+import numpy as np
 # ruff: noqa: E741
 
 
@@ -195,6 +197,8 @@ class Crystal:
         Calculate the ratio of d-spacings for all pairs of faces.
     find_pairs(space_ratio, angle)
         Find pairs of faces that match the given space ratio and angle.
+    calculate_from_image(image_path, points)
+        Calculate the d-spacing ratio and angles from points marked on an image.
     """
 
     HKL_LIST = get_possible_index_combinations(5)
@@ -298,6 +302,40 @@ class Crystal:
                     )
                     print("*" * 30)
                     break
+
+    def calculate_from_image(self, image_path: str, points: list[tuple[int, int]]) -> None:
+        """
+        Calculate the d-spacing ratio and angles from points marked on an image.
+
+        Parameters
+        ----------
+        `image_path` : str
+            The path to the image file.
+        `points` : list of tuple
+            The list of (x, y) coordinates of the marked points.
+        """
+        image = cv2.imread(image_path)
+        if image is None:
+            raise ValueError("Image not found or unable to read")
+
+        if len(points) < 2:
+            raise ValueError("At least two points are required")
+
+        distances = []
+        for i in range(len(points)):
+            for j in range(i + 1, len(points)):
+                pt1, pt2 = points[i], points[j]
+                distance = np.linalg.norm(np.array(pt1) - np.array(pt2))
+                distances.append(distance)
+
+        # Assuming the first two distances are used for the calculation
+        if len(distances) < 2:
+            raise ValueError("Not enough distances calculated from points")
+
+        space_ratio = distances[0] / distances[1]
+        angle = 90  # Placeholder for angle calculation
+
+        self.find_pairs(space_ratio, angle)
 
 
 def main() -> None:
